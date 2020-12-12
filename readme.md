@@ -14,9 +14,7 @@ How To Install this Project
 	- Buat database baru (kosong) pada mysql (via phpmyadmin) dengan nama klikacc.
 	- Duplikat file .env.example, lalu rename menjadi .env.
 	- Kembali ke terminal, php artisan key:generate.
-	- Setting koneksi database di file .env (DB_DATABASE, DB_USERNAME, DB_PASSWORD) dan tambah kan (URL_MEDIA) ini untuk url image 
-
-		URL_MEDIA=http://127.0.0.1:8000
+	- Setting koneksi database di file .env (DB_DATABASE, DB_USERNAME, DB_PASSWORD) 
 
 		DB_CONNECTION=mysql
 
