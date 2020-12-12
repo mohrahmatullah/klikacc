@@ -11,8 +11,8 @@ class Item extends Model
         'name', 'price','cost', 'created_at','updated_at'
     ];
 
-    public function detail()
-    {
-        return $this->hasMany('App\Model\Detail');
-    }
+    // public function detail()
+    // {
+    //     return $this->hasMany('App\Model\Detail');
+    // }
 }

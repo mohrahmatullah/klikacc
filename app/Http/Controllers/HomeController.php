@@ -6,13 +6,15 @@ use Illuminate\Http\Request;
 use App\Model\Header;
 use App\Model\Item;
 use App\Model\Detail;
+use Session;
+use Validator;
 
 class HomeController extends Controller
 {
     public function index(){
     	$data['detail'] = Detail::leftjoin('trx_po_h','trx_po_h.id','trx_po_d.po_h_id')
     	->leftjoin('ms_item','ms_item.id','trx_po_d.po_item_id')
-    	->select('trx_po_h.po_number', 'ms_item.name','trx_po_d.po_item_qyt','trx_po_d.po_item_price','trx_po_d.po_item_cost')
+    	->select('trx_po_h.po_number', 'ms_item.name','trx_po_d.id', 'trx_po_d.po_item_qyt','trx_po_d.po_item_price','trx_po_d.po_item_cost')
     	->get();
     	// dd($data);
     	return view('admin.products.index', $data);
@@ -22,10 +24,14 @@ class HomeController extends Controller
     {
         $params = [];
 
-        $object = Product::where('id', $id)->first();
+        $object = Detail::leftjoin('trx_po_h','trx_po_h.id','trx_po_d.po_h_id')
+			    	->leftjoin('ms_item','ms_item.id','trx_po_d.po_item_id')
+			    	->select('trx_po_h.po_number','trx_po_h.po_date', 'ms_item.name','trx_po_d.id','trx_po_d.po_item_qyt','trx_po_d.po_item_price','trx_po_d.po_item_cost')
+			    	->where('trx_po_d.id', $id)
+			    	->first();
         if(!$object)
             {
-                return redirect()->route('products');
+                return redirect()->route('/');
             }
 
         $params['products'] = $object;
@@ -40,7 +46,11 @@ class HomeController extends Controller
         $params = [];
 
         if($id){
-            $object = Product::where('id', $id)->first();
+            $object = Detail::leftjoin('trx_po_h','trx_po_h.id','trx_po_d.po_h_id')
+			    	->leftjoin('ms_item','ms_item.id','trx_po_d.po_item_id')
+			    	->select('trx_po_h.po_number','trx_po_h.po_date', 'ms_item.name','trx_po_d.id','trx_po_d.po_item_qyt','trx_po_d.po_item_price','trx_po_d.po_item_cost')
+			    	->where('trx_po_d.id', $id)
+			    	->first();
             if(!$object)
                 {
                     return redirect()->route('products');
@@ -52,8 +62,8 @@ class HomeController extends Controller
         }
 
         $params['products'] = $object;
-$arr = get_defined_vars();
-            dd($arr);
+// $arr = get_defined_vars();
+//             dd($arr);
         return view('admin.products.update', $params);
     }
 
@@ -61,27 +71,18 @@ $arr = get_defined_vars();
     {
         $data = $request->all();
         if($id == 0 ){
-            $rules =  ['product_nama'  => 'required|unique:tbl_produk,nama_produk' ,'product_image' => 'required|mimes:jpeg,png,jpg', 'product_harga' => 'required', 'product_stock' => 'required'];
+            $rules =  ['product_po_number' => 'required','product_nama'  => 'required' ,'product_cost' => 'required', 'product_harga' => 'required', 'product_qyt' => 'required'];
             $atributname = [
               'product_nama.required' => 'The product name field is required.',
               'product_nama.unique' => 'The product name can not be the same.',
               'product_harga.required' => 'The product harga field is required.',
             ];
         }else{
-            $get_produk = Product::where('id', $id)->first();
-            if($get_produk->nama_produk == $request->product_nama){
-                $rules =  ['product_nama'  => 'required' , 'product_image' => 'required', 'product_harga' => 'required|numeric', 'product_stock' => 'required'];
-                $atributname = [
-                  'product_nama.required' => 'The product name field is required.',
-                  'product_harga.required' => 'The product harga field is required.',
-                ];                
-            }else{
-                $rules =  ['product_nama'  => 'required|unique:tbl_produk,nama_produk' , 'product_image' => 'required', 'product_harga' => 'required|numeric', 'product_stock' => 'required'];
-                $atributname = [
-                  'product_nama.required' => 'The product name field is required.',
-                  'product_harga.required' => 'The product harga field is required.',
-                ];
-            }           
+            $rules =  ['product_po_number' => 'required', 'product_nama'  => 'required' , 'product_cost' => 'required', 'product_harga' => 'required|numeric', 'product_qyt' => 'required'];
+            $atributname = [
+              'product_nama.required' => 'The product name field is required.',
+              'product_harga.required' => 'The product harga field is required.',
+            ];           
         }
 
         $validator = Validator::make($data, $rules, $atributname);
@@ -94,23 +95,30 @@ $arr = get_defined_vars();
         else{
 
             if($id == 0 ){
-                $p        =  new Product; 
-
-                $cover = $request->file('product_image');
-                $extension = $cover->getClientOriginalExtension();
-                Storage::disk('public')->put($cover->getClientOriginalName(),  File::get($cover));
-
-                $p->nama_produk                 = $request->product_nama;
-                // $file = $request->file('product_image');
-                // $path = Storage::disk('public')->put('uploads/'.date('FY'), $file);
-
-                $p->image                       = $cover->getClientOriginalName();
-                $p->harga                       = $request->product_harga;
-                $p->stock                       = $request->product_stock;
+                $p        =  new Item; 
+                $p->name                       = $request->product_nama;
+                $p->price                       = $request->product_harga;
+                $p->cost                       = $request->product_cost;
                 $p->save();
 
-              Session::flash('success-message', "Success add banner" );
-              return redirect()->route('products');
+                $h 		= new Header;
+                $h->po_number = $request->product_po_number;
+                $h->po_date = $request->product_date;
+                $h->po_price_total = $request->product_harga;
+                $h->po_cost_total = $request->product_cost;
+                $h->save();
+
+                $d 		= new Detail;
+                $d->po_h_id = $h->id;
+                $d->po_item_id = $p->id;
+                $d->po_item_qyt = $request->product_qyt;
+                $d->po_item_price = $request->product_harga;
+                $d->po_item_cost = $request->product_cost;
+                $d->save();
+
+
+              Session::flash('success-message', "Success add Items" );
+              return redirect()->route('/');
 
             }else{
                 $cover = $request->file('product_image');
@@ -127,7 +135,7 @@ $arr = get_defined_vars();
               Product::where('id', $id)->update($data);
 
               Session::flash('success-message', "Success update product" );
-              return redirect()->route('products');
+              return redirect()->route('/');
 
             }
         }

@@ -17,3 +17,5 @@ Route::group(['prefix' => '/'], function () {
   route::post('products/{id}', 'HomeController@saveProducts')->name('save-products');
   route::get('products/details/{id}', 'HomeController@productsDetails')->name('view-products');
 });
+
+Route::post('/ajax/delete-item', 'AjaxController@selectedItemDeleteById')->name('selected-item-delete');

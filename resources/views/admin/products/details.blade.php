@@ -11,18 +11,22 @@
   <!-- /.card-header -->
   <div class="card-body">
     <dl>
+      <dt>PO Date</dt>
+      <dd>{{ $products->po_date }}</dd>
+      <dt>PO Number</dt>
+      <dd>{{ $products->po_number }}</dd>
       <dt>Nama Produk</dt>
-      <dd>{{ $products->nama_produk }}</dd>
-      <dt>Image</dt>
-      <dd><img src="{{url(env('URL_MEDIA').'/uploads/'.$products->image)}}" width="75px" height="75px"></dd>
-      <dt>Harga</dt>
-      <dd>{{ Rp($products->harga) }}</dd>
-      <dt>Stock</dt>
-      <dd>{{ $products->stock }}</dd>
+      <dd>{{ $products->name }}</dd>
+      <dt>Price</dt>
+      <dd>{{ $products->po_item_price }}</dd>
+      <dt>Cost</dt>
+      <dd>{{ $products->po_item_cost }}</dd>
+      <dt>Qyt</dt>
+      <dd>{{ $products->po_item_qyt }}</dd>
     </dl>
   </div>
 	<div class="card-footer">
-	  <a href="{{ route('products')}}" class="btn btn-secondary">Back</a>
+	  <a href="{{ route('/')}}" class="btn btn-secondary">Back</a>
 	</div>
   <!-- /.card-body -->
 </div>
