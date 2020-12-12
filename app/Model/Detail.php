@@ -11,13 +11,13 @@ class Detail extends Model
         'po_h_id', 'po_item_id','po_item_qyt','po_item_price', 'po_item_cost', 'created_at','updated_at'
     ];
 
-    // public function header()
-    // {
-    //     return $this->belongsTo('App\Model\Header');
-    // }
+    public function header()
+    {
+        return $this->belongsTo('App\Model\Header');
+    }
 
-    // public function item()
-    // {
-    //     return $this->belongsTo('App\Model\Item');
-    // }
+    public function item()
+    {
+        return $this->belongsTo('App\Model\Item');
+    }
 }
