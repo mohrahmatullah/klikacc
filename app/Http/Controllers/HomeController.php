@@ -121,18 +121,20 @@ class HomeController extends Controller
               return redirect()->route('/');
 
             }else{
-                $cover = $request->file('product_image');
-                // dd($cover);
-                $extension = $cover->getClientOriginalExtension();
-                Storage::disk('public')->put($cover->getClientOriginalName(),  File::get($cover));
+            	$a = array(
+	                'po_item_qyt' => $request->product_qyt,
+	                'po_item_price' => $request->product_harga,
+	                'po_item_cost' => $request->product_cost
+            	);
+              Detail::where('id', $id)->update($a);
+              $po_item_id = Detail::where('id', $id)->first()->po_item_id;
+              	$b = array(
+	                'name' => $request->product_nama,
+	                'price' => $request->product_harga,
+	                'cost' => $request->product_cost
+            	);
 
-              $data = array(
-                'nama_produk'                  => $request->product_nama,
-                'image'             => $cover->getClientOriginalName(),
-                'harga'             => $request->product_harga,
-                'stock'               => $request->product_stock
-              );
-              Product::where('id', $id)->update($data);
+              Item::where('id', $po_item_id)->update($b);
 
               Session::flash('success-message', "Success update product" );
               return redirect()->route('/');
