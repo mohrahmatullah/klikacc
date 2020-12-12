@@ -10,4 +10,9 @@ class Header extends Model
     protected $fillable = [
         'po_number', 'po_date','po_price_total','po_cost_total', 'created_at','updated_at'
     ];
+
+    public function detail()
+    {
+        return $this->hasMany('App\Model\Detail');
+    }
 }

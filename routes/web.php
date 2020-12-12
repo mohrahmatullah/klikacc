@@ -13,4 +13,7 @@
 
 Route::group(['prefix' => '/'], function () {
   route::get('/', 'HomeController@index')->name('/');
+  route::get('products/{id}', 'HomeController@productsUpdate')->name('update-products');
+  route::post('products/{id}', 'HomeController@saveProducts')->name('save-products');
+  route::get('products/details/{id}', 'HomeController@productsDetails')->name('view-products');
 });
